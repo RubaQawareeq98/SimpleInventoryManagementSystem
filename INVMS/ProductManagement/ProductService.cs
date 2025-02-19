@@ -74,18 +74,18 @@ internal class ProductService(IProductRepository productRepository)
             Console.WriteLine("************************");
             Console.WriteLine("Enter product name you wont to edit");
             var name = Console.ReadLine();
-            var product = _productRepository.GetProduct(name);
-            if (product == null)
+            try
             {
-                Console.WriteLine($"!!! Product {name} not exist in the inventory !!!");
-            }
-            else
-            {
+                var product = GetProduct(name);
                 Console.Clear();
                 if (_productRepository.EditProduct(product))
                 {
-                    Console.WriteLine($"Product {name} Edited Successfully");            
+                    Console.WriteLine($"Product {name} Edited Successfully");
                 }
+            }
+            catch (KeyNotFoundException ex)
+            {
+                Console.WriteLine(ex.Message);
             }
             Console.WriteLine("************************");
             Console.WriteLine("To Edit more Products Press 1");
@@ -113,15 +113,16 @@ internal class ProductService(IProductRepository productRepository)
             Console.WriteLine("************************");
             Console.WriteLine("Enter product name you want to search");
             var name = Console.ReadLine();
-            var product = _productRepository.GetProduct(name);
-            if (product != null)
+            try
             {
+                var product = GetProduct(name);
                 Console.WriteLine(product);
             }
-            else
+            catch (KeyNotFoundException ex)
             {
-                Console.WriteLine("!!! This product not exist on the inventory !!!");
+                Console.WriteLine(ex.Message);
             }
+            
             Console.WriteLine("************************");
             Console.WriteLine("************************");
             Console.WriteLine("To Search more Products Press 1");
@@ -136,8 +137,14 @@ internal class ProductService(IProductRepository productRepository)
 
     public Product? GetProduct(string name)
     {
-        return _productRepository.GetProduct(name);
+        Product? product = _productRepository.GetProduct(name);
+        if (product == null)
+        {
+            throw new KeyNotFoundException($"!!! The product {name} not exist on the inventory !!!");
+        }
+        return product;
     }
+
     public void Init()
     {
         _productRepository.AddProduct("Watch", 50, 4);
