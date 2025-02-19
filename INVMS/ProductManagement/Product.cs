@@ -10,6 +10,7 @@ namespace INVMS.ProductManagement
     {
         public string Name { set; get; } = string.Empty;
         public int Quantity {  set; get; }
+
         private double price;
         public double Price
         {
@@ -22,6 +23,7 @@ namespace INVMS.ProductManagement
             Quantity = quantitiy;
             Price = price;
         }
+
         public override string ToString()
         {
             return $"| {Name.PadRight(20)} | {Price.ToString("0.00").PadRight(8)} | {Quantity.ToString().PadRight(8)} |";
