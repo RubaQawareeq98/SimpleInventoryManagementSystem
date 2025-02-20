@@ -2,15 +2,15 @@
 namespace INVMS;
 internal class Program
 {
-    private static ProductService productService = new ProductService(new ProductRepository());
+    private static readonly ProductService productService = new ProductService(new ProductRepository());
 
-    static void Main(string[] args)
+    static async Task Main(string[] args) 
     {
         productService.Init();
-        ShowMenu();
+        await ShowMenu();
     }
 
-    public static void ShowMenu()
+    private static async Task ShowMenu()
     {
         while (true)
         {
@@ -32,28 +32,28 @@ internal class Program
                 Console.WriteLine("*** Good Bye ***");
                 break;
             }
-            HandleUserSelection(userSelection);
+            await HandleUserSelection(userSelection);
         }
     }
 
-    public static void HandleUserSelection(string? userSelection)
+    private static async Task HandleUserSelection(string? userSelection)
     {
         switch (userSelection)
         {
             case "1":
-                productService.AddProduct();
+                await productService.AddProduct();
                 break;
             case "2":
-                HandleViewProducts();
+                await HandleViewProducts();
                 break;
             case "3":
-                productService.EditProduct();
+                await productService.EditProduct();
                 break;
             case "4":
-                productService.RemoveProduct();
+                await productService.RemoveProduct();
                 break;
             case "5":
-                productService.FindProduct();
+                await productService.FindProduct();
                 break;
             default:
                 Console.WriteLine("!!! Enter a Valid Option Number !!!");
@@ -61,9 +61,9 @@ internal class Program
         }
     }
 
-    public static void ShowAllProducts(List<Product> products)
+    private static void ShowAllProducts(List<Product> products)
     {
-        if (products.Count() == 0)
+        if (!products.Any())
         {
             Console.WriteLine("************************");
             Console.WriteLine("!!! There is no product in the inventory !!!");
@@ -73,7 +73,7 @@ internal class Program
         {
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine($"{"".PadLeft(46, '=')}");
-            Console.WriteLine($"| {"Name".PadRight(20)} | {"Price".PadRight(8)} | {"Quantity".PadRight(8)} |");
+            Console.WriteLine($"| {"Name",-20} | {"Price",-8} | {"Quantity",-8} |");
             Console.WriteLine($"{"".PadLeft(46, '=')}");
             Console.ResetColor();
 
@@ -88,18 +88,15 @@ internal class Program
         }
     }
 
-    public static void HandleViewProducts()
+    private static async Task HandleViewProducts()
     {
         Console.Clear();
-        var products = productService.GetProducts();
+        var products = await productService.GetProducts();
         ShowAllProducts(products);
         Console.WriteLine("************************");
         Console.WriteLine("Press any key To Exit and Back to Main Menu ");
         var userSelection = Console.ReadLine();
-        if (userSelection != null)
-        {
-            return;
-        }        
+        
     }
-}
 
+}
